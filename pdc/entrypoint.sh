@@ -57,7 +57,7 @@ EOF
     ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/inetorgperson.ldif > /dev/null 2>&1 || true
 
     # Checking database type.
-    ldapsearch -LLL -Y EXTERNAL -H ldapi:/// -D "cn=config" -b "cn=config" 2>/dev/null | egrep --color 'olcDatabase=\{[0-9]\}(b|h|m)db,cn=config'
+    ldapsearch -LLL -Y EXTERNAL -H ldapi:/// -D "cn=config" -b "cn=config" 2>/dev/null | egrep 'olcDatabase=\{[0-9]\}(b|h|m)db,cn=config'
 
     ldapmodify -Y EXTERNAL -H ldapi:/// << EOF
 dn: olcDatabase={1}mdb,cn=config
