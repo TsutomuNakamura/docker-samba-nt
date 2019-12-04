@@ -84,7 +84,8 @@ dc: mysite
 o: Example Inc.
 EOF
 
-    local ip=$(getent hosts samba-nt | cut -d ' ' -f 1)
+    #local ip=$(getent hosts samba-nt | cut -d ' ' -f 1)
+    local ip=$(ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
     echo "${ip} samba-nt.${domain}" >> /etc/hosts
 
     gunzip -c /samba.ldif.gz | ldapadd -Y EXTERNAL -H ldapi:///
