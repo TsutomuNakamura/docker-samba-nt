@@ -14,7 +14,7 @@ RUN apt-get update && \
         libldap2-dev libncurses5-dev libpam0g-dev libparse-yapp-perl \
         libpopt-dev libreadline-dev perl perl-modules pkg-config \
         python-all-dev python-dev python-dnspython python-crypto \
-        xsltproc zlib1g-dev supervisor && \
+        xsltproc zlib1g-dev supervisor iproute2 && \
     apt-get clean
 
 COPY samba.ldif.gz /
