@@ -33,7 +33,7 @@ build_nt() {
     local domain="mysite.example.com"
     local domain_component=$(sed -e 's/^/dc=/' -e 's/\./,dc=/g' <<< "$domain")
     local samba_domain="MYSITE"
-    local host_name="samba-nt"
+    local host_name="$(hostname)"
 
     ldapadd -Y EXTERNAL -H ldapi:/// << EOF
 dn: olcDatabase={0}config,cn=config
@@ -84,9 +84,8 @@ dc: mysite
 o: Example Inc.
 EOF
 
-    #local ip=$(getent hosts samba-nt | cut -d ' ' -f 1)
     local ip=$(ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
-    echo "${ip} samba-nt.${domain}" >> /etc/hosts
+    echo "${ip} ${host_name}.${domain}" >> /etc/hosts
 
     gunzip -c /samba.ldif.gz | ldapadd -Y EXTERNAL -H ldapi:///
 
@@ -119,6 +118,17 @@ olcDbIndex: sambaGroupType eq
 olcDbIndex: sambaSIDList eq
 olcDbIndex: sambaDomainName eq
 olcDbIndex: default sub
+EOF
+
+    # Modify olcAccess to be able to write user entries to root.
+    # The attribute "olcAccess: {2}" is already determined like below.
+    #   olcAccess: {2}to * by * read
+    # This ldap modify insert the new entry and the record that already existed will be shifted to "olcAccess: {3}".
+    ldapmodify -Y EXTERNAL -H ldapi:/// << EOF
+dn: olcDatabase={1}mdb,cn=config
+changetype: modify
+add: olcAccess
+olcAccess: {2}to dn.subtree="${domain_component}" by dn.exact="uid=Administrator,ou=Users,${domain_component}" write
 EOF
 
     cp -ip /etc/samba/smb.conf /etc/samba/smb.conf.org
