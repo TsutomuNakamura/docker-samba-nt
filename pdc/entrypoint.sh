@@ -124,16 +124,25 @@ EOF
     # The attribute "olcAccess: {2}" is already determined like below.
     #   olcAccess: {2}to * by * read
     # This ldap modify insert the new entry and the record that already existed will be shifted to "olcAccess: {3}".
-    ldapmodify -Y EXTERNAL -H ldapi:/// << EOF
+ldapmodify -Y EXTERNAL -H ldapi:/// << EOF
 dn: olcDatabase={1}mdb,cn=config
 changetype: modify
 replace: olcAccess
-olcAccess: {0}to attrs=userPassword by self write by dn.exact="uid=root,ou=Users,${domain_component}" write by anonymous auth by * none
-olcAccess: {1}to attrs=shadowLastChange by self write by * read
-olcAccess: {2}to dn.subtree="${domain_component}" by dn.exact="uid=root,ou=Users,${domain_component}" write
-olcAccess: {3}to * by * read
+olcAccess: {0}to attrs=userPassword
+  by self write
+  by dn.exact="uid=root,ou=Users,${domain_component}" write
+  by anonymous auth
+  by * none
+olcAccess: {1}to attrs=shadowLastChange
+  by self write
+  by * read
+olcAccess: {2}to dn.subtree="${domain_component}"
+  by dn.exact="uid=root,ou=Users,${domain_component}" write
+  by self write
+  by * read
+olcAccess: {3}to *
+  by * read
 EOF
-
 
     cp -ip /etc/samba/smb.conf /etc/samba/smb.conf.org
     cat << EOF > /etc/samba/smb.conf
