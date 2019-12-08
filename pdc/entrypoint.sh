@@ -127,9 +127,13 @@ EOF
     ldapmodify -Y EXTERNAL -H ldapi:/// << EOF
 dn: olcDatabase={1}mdb,cn=config
 changetype: modify
-add: olcAccess
+replace: olcAccess
+olcAccess: {0}to attrs=userPassword by self write by dn.exact="uid=Administrator,ou=Users,${domain_component}" write by anonymous auth by * none
+olcAccess: {1}to attrs=shadowLastChange by self write by * read
 olcAccess: {2}to dn.subtree="${domain_component}" by dn.exact="uid=Administrator,ou=Users,${domain_component}" write
+olcAccess: {3}to * by * read
 EOF
+
 
     cp -ip /etc/samba/smb.conf /etc/samba/smb.conf.org
     cat << EOF > /etc/samba/smb.conf
