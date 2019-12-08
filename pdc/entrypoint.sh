@@ -128,9 +128,9 @@ EOF
 dn: olcDatabase={1}mdb,cn=config
 changetype: modify
 replace: olcAccess
-olcAccess: {0}to attrs=userPassword by self write by dn.exact="uid=Administrator,ou=Users,${domain_component}" write by anonymous auth by * none
+olcAccess: {0}to attrs=userPassword by self write by dn.exact="uid=root,ou=Users,${domain_component}" write by anonymous auth by * none
 olcAccess: {1}to attrs=shadowLastChange by self write by * read
-olcAccess: {2}to dn.subtree="${domain_component}" by dn.exact="uid=Administrator,ou=Users,${domain_component}" write
+olcAccess: {2}to dn.subtree="${domain_component}" by dn.exact="uid=root,ou=Users,${domain_component}" write
 olcAccess: {3}to * by * read
 EOF
 
