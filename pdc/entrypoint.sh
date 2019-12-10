@@ -35,6 +35,16 @@ build_nt() {
     local samba_domain="MYSITE"
     local host_name="$(hostname)"
 
+    # Change the format of storing password.
+    ldapmodify << 'EOF'
+dn: cn=config
+add: olcPasswordHash
+olcPasswordHash: {CRYPT}
+-
+add: olcPasswordCryptSaltFormat
+olcPasswordCryptSaltFormat: $6$%.16s
+EOF
+
     ldapadd -Y EXTERNAL -H ldapi:/// << EOF
 dn: olcDatabase={0}config,cn=config
 changetype: modify
